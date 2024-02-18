@@ -1,23 +1,28 @@
 import dotenv from 'dotenv'
-import connectDB from './db/index.db.js'
 import { app } from './app.js'
-
+import connect from './db/index.db.js'
 
 
 dotenv.config({
     path: './env'
 })
 
+// connectDB.connect((err) => {
+//     if (err) {
+//         console.log("ERROR: ", err)
+//     } else {
+//         console.log("MYSql connection successful")
+//     }
+// })
 
 
-
-connectDB()
+connect()
     .then(() => {
 
         app.on("error", (err) => console.log(err))
 
 
-        app.listen(process.env.PORT || 8000, () => {
+        connect.connect(process.env.PORT || 8000, () => {
             console.log(`Server is listenig on port ${process.env.PORT}`)
         })
     })
