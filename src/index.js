@@ -1,31 +1,15 @@
 import dotenv from 'dotenv'
 import { app } from './app.js'
-import connect from './db/index.db.js'
-
+import { sequelize } from './db/index.db.js'
 
 dotenv.config({
     path: './env'
 })
 
-// connectDB.connect((err) => {
-//     if (err) {
-//         console.log("ERROR: ", err)
-//     } else {
-//         console.log("MYSql connection successful")
-//     }
-// })
 
+sequelize.authenticate().then(() => {
+    console.log(`Connection has been eastablished successfully!!!`)
+}).catch((error) => {
+    console.log(`Unable to connect to the databse:`, error)
+})
 
-connect()
-    .then(() => {
-
-        app.on("error", (err) => console.log(err))
-
-
-        connect.connect(process.env.PORT || 8000, () => {
-            console.log(`Server is listenig on port ${process.env.PORT}`)
-        })
-    })
-    .catch((err) => {
-        console.log(`MongoDB connection failed !!`, err)
-    })
