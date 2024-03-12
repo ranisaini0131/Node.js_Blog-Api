@@ -7,6 +7,10 @@ dotenv.config({
 })
 
 
+
+// app.use()
+
+
 sequelize.authenticate().then(() => {
     console.log(`Connection has been eastablished successfully!!!`)
 }).catch((error) => {

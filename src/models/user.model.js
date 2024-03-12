@@ -1,86 +1,78 @@
-import mongoose, { Schema } from "mongoose";
 
-const userSchema = new Schema(
-    {
+const User = (sequelize, DataTypes) => {
+    const User = sequelize.define("User", {
         firstName: {
-            type: String,
-            required: [true, "First Name is requied"]
+            type: DataTypes.STRING
         },
 
-        laststName: {
-            type: String,
-            required: [true, "Last Name is requied"]
+        lastName: {
+            type: DataTypes.STRING
         },
 
         profilePhoto: {
-            type: String
+            type: DataTypes.STRING
         },
 
         email: {
-            type: String,
-            required: [true, "email is requied"]
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true
         },
 
         password: {
-            type: String,
-            required: [true, "Password is requied"]
+            type: DataTypes.STRING,
+            allowNull: false
         },
 
         postCount: {
-            type: Number,
-            default: 0
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
 
         isBlocked: {
-            type: Boolean
+            type: DataTypes.BOOLEAN
         },
         isAdmin: {
-            type: Boolean,
-            default: false
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         },
 
         role: {
-            type: String,
-            enum: ["Admin", "Guest", "Editor"]
+            type: DataTypes.ENUM('Admin', 'Guest', 'Editor')
+
         },
 
-        viewedBy: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User"
-            }
-        ],
-
-        followers: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User"
-            }
-        ],
-
-        following: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User"
-            }
-        ],
         active: {
-            type: Boolean,
-            default: true
-        },
-
-        posts: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Post"
-            }
-        ],
-
-    },
-    {
-        timestamps: true
-    }
-)
+            type: DataTypes.BOOLEAN,
+            defaultValue: true
+        }
+    });
 
 
-export const User = mongoose.model("User", userSchema)
+    // Associations
+    User.belongsToMany(User, {
+        through: 'UserViews',
+        as: 'viewers',
+        foreignKey: 'viewedUserId'
+    });
+
+    User.belongsToMany(User, {
+        through: 'UserFollowers',
+        as: 'following',
+        foreignKey: 'followerId',
+    });
+
+    User.belongsToMany(User, {
+        through: 'UserFollows',
+        as: "followers",
+        foreignKey: 'followingId'
+    });
+
+    User.belongsToMany(Post, {
+        through: 'UserPosts',
+        as: 'posts'
+    });
+
+}
+
+export default User;

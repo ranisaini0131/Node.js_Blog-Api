@@ -1,53 +1,63 @@
-import mongoose, { Schema } from "mongoose";
+import sequelize, { DataTypes } from "sequelize"
 
-const postSchema = new Schema(
-    {
-        title: {
-            type: String,
-            required: true,
-            trim: true
-        },
-        description: {
-            type: String,
-            required: [true, "Post decription required"]
-        },
-        category: {
-            type: Schema.Types.ObjectId,
-            ref: "Category",
-            required: [true, "Post must belong to a Category"]
-        },
-        numView: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User"
-            }
-        ],
-        likes: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User"
-            }
-        ],
-        disLikes: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User"
-            }
-        ],
-        user: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            required: [true, "please provide Author"]
-        },
-        photo: {
-            type: String,
-            required: true
+export const Post = sequelize.define("Post", {
+
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        trim: true
+    },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    category_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'Category',
+            key: 'id'
         }
     },
-    {
-        timestamps: true
+    user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'User',
+            key: 'id'
+        }
+    },
+    photo: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
-)
+})
 
 
-export const Post = mongoose.model("User", postSchema)
+// Define associations
+Post.belongsTo(User, {
+    foreignKey: 'user_id'
+});
+
+Post.belongsTo(Category, {
+    foreignKey: 'category_id'
+});
+
+Post.belongsToMany(User, {
+    through: 'PostViews',
+    as: 'numView',
+    foreignKey: 'post_id'
+});
+
+Post.belongsToMany(User, {
+    through: 'PostLikes',
+    as: 'likes',
+    foreignKey: 'post_id'
+});
+
+Post.belongsToMany(User, {
+    through: 'PostDisLikes',
+    as: 'disLikes',
+    foreignKey: 'post_id'
+});
+

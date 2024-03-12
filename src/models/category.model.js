@@ -1,20 +1,23 @@
-import mongoose, { Schema } from "mongoose";
+import sequelize, { DataTypes } from "sequelize"
 
-const categorySchema = new Schema(
-    {
-        user: {
-            type: Schema.Types.ObjectId,
-            ref: "User"
-        },
-        title: {
-            type: String,
-            required: true
+export const Category = sequelize.define("Category", {
+    user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'User',
+            key: 'id'
         }
     },
-    {
-        timestamps: true
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
-)
+}, {
+    timestamps: true
+});
 
-
-export const Category = mongoose.model("Category", categorySchema)
+// Define associations
+Category.belongsTo(User, {
+    foreignKey: 'user_id'
+});

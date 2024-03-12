@@ -1,24 +1,31 @@
-import mongoose, { Schema } from "mongoose";
+import sequelize, { DataTypes } from "sequelize"
 
-const commentSchema = new Schema(
-    {
-        post: {
-            type: Schema.Types.ObjectId,
-            ref: "Post"
-        },
-        user: {
-            type: Schema.Types.ObjectId,
-            required: [true, 'User field is required'],
-        },
-        description: {
-            type: String,
-            required: [true, "Comment description is required"]
+export const Comment = sequelize.define("Comment", {
+    post_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'Post',
+            key: 'id'
         }
     },
-    {
-        timestamps: true
+    user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
-)
+}, {
+    timestamps: true
+});
 
+// Define associations
+Comment.belongsTo(Post, {
+    foreignKey: 'post_id'
+});
 
-export const Comment = mongoose.model("Comment", commentSchema)
+Comment.belongsTo(User, {
+    foreignKey: 'user_id'
+});
